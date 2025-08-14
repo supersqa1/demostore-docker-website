@@ -95,13 +95,16 @@ jobs:
           DEV_SSH_KEY: ${{ secrets.DEV_SSH_KEY }}
           DOCKER_IMAGE: supersqa/demostore-wordpress
         run: |
+          set -x
           echo "🚀 Deploying to Development environment..."
           echo "🌍 Environment: development"
           echo "🔧 Target host: $DEV_HOST"
           
-          # Create SSH key file from private key
+          # Create SSH directory and key file
+          mkdir -p ~/.ssh
           echo "$DEV_SSH_KEY" > ~/.ssh/dev_key
           chmod 600 ~/.ssh/dev_key
+          ls -la ~/.ssh/
           
           # Get the latest commit hash for the image tag
           COMMIT_HASH=$(git rev-parse --short=8 HEAD)
