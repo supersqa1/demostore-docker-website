@@ -115,7 +115,10 @@ jobs:
             echo "🔧 Starting deployment on dev machine..."
             
             # Pull the latest image
+            echo "🔨 Pulling image from Docker Hub..."
             docker pull supersqa/demostore-wordpress:$COMMIT_HASH
+            echo "🎉 Image pulled from Docker Hub successfully!"
+            docker images
             
             # # Stop existing container
             # docker stop demostore-dev || true
