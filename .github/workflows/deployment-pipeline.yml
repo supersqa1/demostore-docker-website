@@ -56,12 +56,21 @@ jobs:
           docker images
           echo "🔨 Building Docker image..."
           cd demostore-basic
-          docker build -t supersqa/demostore-wordpress:action-1.1 .
+          
+          # Get commit hash for tagging (8 characters for uniqueness)
+          COMMIT_HASH=$(git rev-parse --short=8 HEAD)
+          echo "📝 Building image with commit hash: $COMMIT_HASH"
+          
+          # Build with both latest and commit hash tags
+          docker build -t supersqa/demostore-wordpress:latest -t supersqa/demostore-wordpress:$COMMIT_HASH .
           docker images
           echo "🎉 Image build completed successfully!"
-          echo "🔨 Pushing image to Docker Hub"
-          docker push supersqa/demostore-wordpress:action-1.1
-          echo "🎉 Image pushed to Docker Hub successfully!"
+          
+          echo "🔨 Pushing images to Docker Hub..."
+          docker push supersqa/demostore-wordpress:latest
+          docker push supersqa/demostore-wordpress:$COMMIT_HASH
+          echo "🎉 Images pushed to Docker Hub successfully!"
+          echo "📋 Pushed tags: latest, $COMMIT_HASH"
 
         #   echo "📦 Pulling base images"
         #   echo "🏗️  Building application layers"
