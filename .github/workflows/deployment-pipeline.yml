@@ -32,9 +32,15 @@ jobs:
       
       - name: Build Docker Image
         run: |
-          echo "🔨 Building Docker image..."
+          echo "🔨 Verifying environment and that docker is installed."
           ls -la
+          docker --version
           docker images
+          echo "🔨 Building Docker image..."
+          cd demostore-basic
+          docker build -t image-from-actions:latest .
+          docker images
+          echo "🎉 Image build completed successfully!"
 
         #   echo "📦 Pulling base images"
         #   echo "🏗️  Building application layers"
