@@ -120,34 +120,41 @@ jobs:
             echo "🎉 Image pulled from Docker Hub successfully!"
             docker images
             
-            # # Stop existing container
-            # docker stop demostore-dev || true
-            # docker rm demostore-dev || true
+            echo "🔄 Updating WordPress container with new image..."
             
-            # # Run new container
-            # docker run -d \
-            #   --name demostore-dev \
-            #   --restart unless-stopped \
-            #   -p 8080:80 \
-            #   -e WORDPRESS_DB_HOST=localhost \
-            #   -e WORDPRESS_DB_NAME=demostore_dev \
-            #   -e WORDPRESS_DB_USER=wordpress \
-            #   -e WORDPRESS_DB_PASSWORD=dev_password \
-            #   supersqa/demostore-wordpress:$COMMIT_HASH
+            # Stop only the WordPress container (keep MySQL running)
+            docker stop demostore_wp || true
+            docker rm demostore_wp || true
             
-            echo "✅ Container started successfully"
+            # Start new WordPress container with the same configuration
+            docker run -d \
+              --name demostore_wp \
+              --restart always \
+              --network demostore-basic_default \
+              -p 7171:80 \
+              -e WORDPRESS_DB_HOST=demostore_mysql:3306 \
+              -e WORDPRESS_DB_USER=wordpress \
+              -e WORDPRESS_DB_PASSWORD=password \
+              -e WORDPRESS_DB_NAME=demostore \
+              -e WORDPRESS_IP=0.0.0.0 \
+              supersqa/demostore-wordpress:$COMMIT_HASH
+            
+            echo "✅ WordPress container started successfully"
             
             # Wait for container to be ready
-            sleep 10
+            echo "⏳ Waiting for WordPress to be ready..."
+            sleep 15
             
             # Check if container is running
-            # if docker ps | grep -q demostore-dev; then
-            #   echo "🎉 Deployment completed successfully!"
-            #   echo "🌐 Application available at: http://$DEV_HOST:8080"
-            # else
-            #   echo "❌ Deployment failed - container not running"
-            #   exit 1
-            # fi
+            if docker ps | grep -q demostore_wp; then
+              echo "🎉 Deployment completed successfully!"
+              echo "🌐 Application available at: http://$DEV_HOST:7171"
+              echo "📊 Container status:"
+              docker ps | grep demostore_wp
+            else
+              echo "❌ Deployment failed - WordPress container not running"
+              exit 1
+            fi
           EOF
           
           # Check if SSH command was successful
