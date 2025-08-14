@@ -111,7 +111,7 @@ jobs:
           echo "📝 Deploying image: $DOCKER_IMAGE:$COMMIT_HASH"
           
           # SSH into dev machine and deploy
-          ssh -i ~/.ssh/dev_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $DEV_USER@$DEV_HOST << 'EOF'
+          ssh -i ~/.ssh/dev_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $DEV_USER@$DEV_HOST << EOF
             echo "🔧 Starting deployment on dev machine..."
             
             # Pull the latest image
@@ -149,6 +149,12 @@ jobs:
             #   exit 1
             # fi
           EOF
+          
+          # Check if SSH command was successful
+          if [ $? -ne 0 ]; then
+            echo "❌ SSH deployment failed"
+            exit 1
+          fi
           
           # Clean up SSH key
           rm -f ~/.ssh/dev_key
