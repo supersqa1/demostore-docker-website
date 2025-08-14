@@ -32,15 +32,19 @@ jobs:
       
       - name: Build Docker Image
         run: |
+          set -x
           echo "🔨 Verifying environment and that docker is installed."
           ls -la
           docker --version
           docker images
           echo "🔨 Building Docker image..."
           cd demostore-basic
-          docker build -t image-from-actions:latest .
+          docker build -t supersqa/demostore-wordpress:action-1.1 .
           docker images
           echo "🎉 Image build completed successfully!"
+          echo "🔨 Pushing image to Docker Hub"
+          docker push supersqa/demostore-wordpress:action-1.1
+          echo "🎉 Image pushed to Docker Hub successfully!"
 
         #   echo "📦 Pulling base images"
         #   echo "🏗️  Building application layers"
